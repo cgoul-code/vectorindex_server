@@ -1,0 +1,24 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	apify_call_load_documents(apify_call_load_documents)
+	persist_storage_for_documents(persist_storage_for_documents)
+	persist_storage_for_answered_questions(persist_storage_for_answered_questions)
+	create_metadata_for_documents(create_metadata_for_documents)
+	create_answered_questions(create_answered_questions)
+	create_log_excel(create_log_excel)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> apify_call_load_documents;
+	apify_call_load_documents --> create_metadata_for_documents;
+	create_answered_questions --> persist_storage_for_answered_questions;
+	create_metadata_for_documents --> persist_storage_for_documents;
+	persist_storage_for_answered_questions --> create_log_excel;
+	persist_storage_for_documents --> create_answered_questions;
+	create_log_excel --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc

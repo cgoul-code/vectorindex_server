@@ -6,4 +6,4 @@ else
     source antenv/bin/activate
 fi
 
-python -m hypercorn app:editor_api --bind 0.0.0.0:${PORT:-8000}
+python -m hypercorn editor_api:app --bind 0.0.0.0:${PORT:-8000}

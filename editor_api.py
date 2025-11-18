@@ -10,8 +10,9 @@ from dotenv import load_dotenv, find_dotenv
 from llama_index.core import Settings
 from quart_cors import cors
 from azure.storage.blob import BlobServiceClient
+from llama_index.core.schema import TextNode
 
-PERSIST_DIR = "blobstorage/chatbot/hvaerinnafor_qa_bank"  # tilpass til ditt oppsett
+
 
 load_dotenv(find_dotenv())
 
@@ -22,6 +23,7 @@ else:
     LOCAL_STORAGE_PATH = "vector-index"  # Default for local testing
     
 IN_AZURE = "WEBSITE_SITE_NAME" in os.environ or "FUNCTIONS_WORKER_RUNTIME" in os.environ
+#IN_AZURE = True
     
 # Logical name of the index (used as prefix in blob container and local folder name)
 INDEX_NAME = os.getenv("INDEX_NAME", "hvaerinnafor_qa_bank")  
@@ -274,7 +276,47 @@ async def update_node(node_id: str):
 
     return jsonify({"status": "ok", "node": node_to_dict(node)})
 
+@app.route("/nodes", methods=["POST"])
+async def create_node():
+    """
+    Create a new node:
+      - Create TextNode with text + metadata
+      - Insert into index (docstore + vector store)
+      - Persist
+      - If in Azure: upload to Blob
+    """
+    global index, storage_context
 
+    try:
+        payload = await request.get_json()
+        logging.info(f"POST /nodes payload: {payload!r}")
+    except Exception as e:
+        logging.exception("Failed to parse JSON payload for /nodes")
+        return jsonify({"error": "Invalid JSON payload", "detail": str(e)}), 400
+
+    text = (payload or {}).get("text", "")
+    metadata = (payload or {}).get("metadata", {}) or {}
+
+    try:
+        # 1) Create the node
+        node = TextNode(text=text, metadata=metadata)
+
+        # 2) Insert into index (handles docstore + vector store)
+        index.insert_nodes([node])
+
+        # 3) Persist to local storage
+        storage_context.persist(persist_dir=PERSIST_DIR)
+        logging.info(f"Persisted new node to {PERSIST_DIR}")
+
+        # 4) If running in Azure, push updated files back to Blob
+        if IN_AZURE:
+            upload_index_to_blob()
+
+        return jsonify(node_to_dict(node)), 201
+
+    except Exception as e:
+        logging.exception("Error while creating node")
+        return jsonify({"error": "Server error while creating node", "detail": str(e)}), 500
 
 
 if __name__ == "__main__":

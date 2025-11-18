@@ -1,4 +1,4 @@
-from .agent_workflow_build_hei_index import (build_hei_index_workflow, State_buildIndex)
+from agent_workflow_build_hei_index import (build_hei_index_workflow, State_buildIndex)
 import logging, os
 from dotenv import load_dotenv
 from langchain_openai import AzureChatOpenAI

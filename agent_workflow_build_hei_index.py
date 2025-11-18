@@ -569,6 +569,7 @@ def create_metadata_for_documents(state: State_buildIndex) -> dict:
             category_obj = json.loads(category_raw)
             category = category_obj.get("kategori")
             doc.metadata["category"] = category
+            doc.metadata["valid"] = True
             
         except Exception as e:
             print(f"Failed to parse questions: {e} | raw={qa_raw!r}")
@@ -616,6 +617,7 @@ def create_answered_questions(state: State_buildIndex) -> dict:
                 new_doc.metadata["from_doc_id"] = getattr(doc, "doc_id", None)
                 new_doc.metadata["url"] = doc.metadata.get("url", "")
                 new_doc.metadata["category"]= doc.metadata.get("category", "")
+                new_doc.metadata["valid"] = True
                 print(f'newdoc: {new_doc.text}, {new_doc.metadata}\n')
                 answered_questions.append(new_doc)
         print(f'Found {len(answered_questions)} answered questions')
@@ -714,6 +716,7 @@ def create_log_excel(state: dict) -> dict:
             "answer": qdoc.metadata.get("answer", ""),
             "category": qdoc.metadata.get("category", ""),
             "severity": qdoc.metadata.get("severity", ""),
+            "valid": True,
             "url": qdoc.metadata.get("url", ""),
         })
 
@@ -790,4 +793,4 @@ build_hei_index_workflow = builder.compile()
 logging.info("answer_witth_related_queries_workflow created...")
 
 from graph_utils import save_mermaid_diagram
-save_mermaid_diagram(build_hei_index_workflow.get_graph())
+#save_mermaid_diagram(build_hei_index_workflow.get_graph())
