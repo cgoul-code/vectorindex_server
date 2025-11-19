@@ -43,9 +43,8 @@ for node in nodes:
         node.metadata = {}
 
     # Only update if it's missing or wrong
-    if node.metadata.get("valid") is not True:
-        node.metadata["valid"] = True
-        updated += 1
+    if node.metadata.get("valid") is not 1:
+        node.metadata["valid"] = 1
 
     # Save change into docstore
     # allow_update=True overwrites existing
