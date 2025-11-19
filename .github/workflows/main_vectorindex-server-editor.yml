@@ -42,8 +42,10 @@ jobs:
           name: python-app
 
       - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@v2
         with:
           app-name: 'vectorindex-server-editor'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A462A6E3BD4748D88B6AF1E6B1FDBAC1 }}
+          package: .
+
