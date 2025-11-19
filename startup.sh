@@ -1,9 +1,5 @@
-if [ ! -d "antenv" ]; then
-    python3 -m venv antenv
-    source antenv/bin/activate
-    pip install --no-cache-dir -r requirements.txt
-else
-    source antenv/bin/activate
-fi
+#!/bin/bash
 
+# Oryx har allerede satt opp Python-miljøet og installert requirements.
+# Du trenger bare å starte serveren.
 python -m hypercorn editor_api:app --bind 0.0.0.0:${PORT:-8000}
