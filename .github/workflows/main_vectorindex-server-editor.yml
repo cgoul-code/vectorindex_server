@@ -1,0 +1,33 @@
+name: Deploy vectorindex-server-editor
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # (valgfritt) test/lint her, har ikke noe med selve deployen å gjøre
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'vectorindex-server-editor'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A462A6E3BD4748D88B6AF1E6B1FDBAC1 }}
+          package: .
+
+
+
